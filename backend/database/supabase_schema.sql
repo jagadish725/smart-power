@@ -74,4 +74,3 @@ VALUES
     ('led_power_threshold_mw', '3500', 'Threshold for LED high consumption warning (mW)'),
     ('total_power_budget_mw', '8500', 'Overall safety power budget (mW)')
 ON CONFLICT (setting_key) DO NOTHING;
-
