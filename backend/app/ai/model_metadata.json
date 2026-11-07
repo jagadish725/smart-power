@@ -1,0 +1,26 @@
+{
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 100,
+  "features": [
+    "fan_voltage",
+    "fan_current_ma",
+    "fan_power_mw",
+    "fan_relay",
+    "led_voltage",
+    "led_current_ma",
+    "led_power_mw",
+    "led_relay",
+    "total_power_mw"
+  ],
+  "classes": [
+    "ABNORMAL",
+    "HIGH_CONSUMPTION",
+    "IDLE",
+    "NORMAL"
+  ],
+  "accuracy": 1.0,
+  "trained_at": "2026-11-07T16:05:49.334319+00:00",
+  "is_synthetic_demonstration": true,
+  "training_data_source": "synthetic_power_data.csv",
+  "notes": "Model trained on synthetic demonstration data. Retrain with real INA219 readings when available."
+}
