@@ -25,6 +25,14 @@ def create_app():
     # Register API blueprint
     app.register_blueprint(api_bp)
 
+    @app.route("/")
+    def root():
+        return jsonify({
+            "status": "healthy",
+            "service": "Smart Power Optimization Backend",
+            "api_prefix": "/api"
+        }), 200
+
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({"status": "error", "message": "Endpoint not found."}), 404

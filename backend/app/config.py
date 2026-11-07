@@ -15,7 +15,11 @@ class Config:
 
     # SQLite Database Fallback
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    DATABASE_PATH = os.path.join(BASE_DIR, "app", "smart_power.db")
+    # In Vercel serverless environments, only /tmp is writable
+    if os.getenv("VERCEL"):
+        DATABASE_PATH = "/tmp/smart_power.db"
+    else:
+        DATABASE_PATH = os.path.join(BASE_DIR, "app", "smart_power.db")
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{DATABASE_PATH}"
 
     # Relay settings
