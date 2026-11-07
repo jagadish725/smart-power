@@ -264,3 +264,4 @@ export default function ScenarioSimulator({ onInjectTelemetry, isOfflineMode, on
     </div>
   );
 }
+
