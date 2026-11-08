@@ -18,5 +18,5 @@ if __name__ == "__main__":
     print(f" * Database Mode:     {'Supabase' if Config.SUPABASE_URL else 'Local SQLite'}")
     print(f" * Operating Mode:    MANUAL (Default)")
     print("=" * 65)
-    app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
+    app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG, use_reloader=False)
 
