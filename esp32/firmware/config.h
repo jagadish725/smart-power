@@ -5,13 +5,13 @@
 // SMART POWER OPTIMIZATION SYSTEM - ESP32 FIRMWARE CONFIGURATION
 // ==============================================================================
 
-// 1. Wi-Fi Hotspot Credentials (Configured)
-#define WIFI_SSID     "Enter Password"
+// 1. Wi-Fi Hotspot Credentials (Notice exact space at end of "Enter Password ")
+#define WIFI_SSID     "Enter Password "
 #define WIFI_PASSWORD "Enterpassword"
 
 // 2. Flask Backend API Configuration
-// Laptop's Wi-Fi IP address on your hotspot network
-#define BACKEND_HOST "192.168.1.10"
+// Laptop's actual IP address on this hotspot
+#define BACKEND_HOST "10.239.17.214"
 #define BACKEND_PORT 5000
 #define API_ENDPOINT "http://" BACKEND_HOST ":" String(BACKEND_PORT) "/api/readings"
 
