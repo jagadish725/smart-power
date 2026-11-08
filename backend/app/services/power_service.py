@@ -102,26 +102,83 @@ class PowerService:
             reading = session.query(Reading).order_by(Reading.id.desc()).first()
             if reading:
                 return reading.to_dict()
-            return {
-                "id": None,
-                "timestamp": None,
-                "fan": {"voltage": 0.0, "current_ma": 0.0, "power_mw": 0.0, "relay_on": False},
-                "led": {"voltage": 0.0, "current_ma": 0.0, "power_mw": 0.0, "relay_on": False},
-                "total_power_mw": 0.0,
-                "is_simulated": False
-            }
+        except Exception as e:
+            logger.warning("Local SQLite reading query failed: %s", e)
         finally:
             session.close()
+
+        # If local database has no readings (e.g. on serverless Vercel), read from Supabase Cloud
+        sb = get_supabase()
+        if sb:
+            try:
+                res = sb.table("sensor_readings").select("*").order("created_at", desc=True).limit(1).execute()
+                if res.data and len(res.data) > 0:
+                    row = res.data[0]
+                    fan_v = float(row.get("fan_voltage") or 0.0)
+                    fan_i = float(row.get("fan_current_ma") or 0.0)
+                    fan_p = float(row.get("fan_power_mw") or 0.0)
+                    led_v = float(row.get("led_voltage") or 0.0)
+                    led_i = float(row.get("led_current_ma") or 0.0)
+                    led_p = float(row.get("led_power_mw") or 0.0)
+                    return {
+                        "id": row.get("id"),
+                        "timestamp": row.get("created_at"),
+                        "fan": {"voltage": fan_v, "current_ma": fan_i, "power_mw": fan_p, "relay_on": bool(row.get("fan_relay_state", False))},
+                        "led": {"voltage": led_v, "current_ma": led_i, "power_mw": led_p, "relay_on": bool(row.get("led_relay_state", False))},
+                        "total_power_mw": float(row.get("total_power_mw") or (fan_p + led_p)),
+                        "is_simulated": bool(row.get("is_simulated", False))
+                    }
+            except Exception as e:
+                logger.warning("Supabase read failed: %s", e)
+
+        return {
+            "id": None,
+            "timestamp": None,
+            "fan": {"voltage": 0.0, "current_ma": 0.0, "power_mw": 0.0, "relay_on": False},
+            "led": {"voltage": 0.0, "current_ma": 0.0, "power_mw": 0.0, "relay_on": False},
+            "total_power_mw": 0.0,
+            "is_simulated": False
+        }
 
     @staticmethod
     def get_reading_history(limit: int = 50) -> list:
         session = SessionLocal()
         try:
             readings = session.query(Reading).order_by(Reading.id.desc()).limit(limit).all()
-            # Return chronologically ascending for charts
-            return [r.to_dict() for r in reversed(readings)]
+            if readings and len(readings) > 0:
+                return [r.to_dict() for r in reversed(readings)]
+        except Exception as e:
+            logger.warning("Local SQLite history query failed: %s", e)
         finally:
             session.close()
+
+        # If local database has no history (e.g. on serverless Vercel), read from Supabase Cloud
+        sb = get_supabase()
+        if sb:
+            try:
+                res = sb.table("sensor_readings").select("*").order("created_at", desc=True).limit(limit).execute()
+                if res.data and len(res.data) > 0:
+                    formatted = []
+                    for row in res.data:
+                        fan_v = float(row.get("fan_voltage") or 0.0)
+                        fan_i = float(row.get("fan_current_ma") or 0.0)
+                        fan_p = float(row.get("fan_power_mw") or 0.0)
+                        led_v = float(row.get("led_voltage") or 0.0)
+                        led_i = float(row.get("led_current_ma") or 0.0)
+                        led_p = float(row.get("led_power_mw") or 0.0)
+                        formatted.append({
+                            "id": row.get("id"),
+                            "timestamp": row.get("created_at"),
+                            "fan": {"voltage": fan_v, "current_ma": fan_i, "power_mw": fan_p, "relay_on": bool(row.get("fan_relay_state", False))},
+                            "led": {"voltage": led_v, "current_ma": led_i, "power_mw": led_p, "relay_on": bool(row.get("led_relay_state", False))},
+                            "total_power_mw": float(row.get("total_power_mw") or (fan_p + led_p)),
+                            "is_simulated": bool(row.get("is_simulated", False))
+                        })
+                    return list(reversed(formatted))
+            except Exception as e:
+                logger.warning("Supabase history read failed: %s", e)
+
+        return []
 
     @staticmethod
     def get_analytics_summary() -> dict:

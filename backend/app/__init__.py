@@ -18,9 +18,12 @@ def create_app():
     # Enable CORS for React frontend (allows all origins in development)
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # Initialize local SQLite database schema & seeds
-    with app.app_context():
-        init_db()
+    # Initialize local SQLite database schema & seeds (safe initialization)
+    try:
+        with app.app_context():
+            init_db()
+    except Exception as e:
+        logger.warning("Database init failed or read-only filesystem (continuing): %s", e)
 
     # Register API blueprint
     app.register_blueprint(api_bp)
