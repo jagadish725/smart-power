@@ -85,6 +85,20 @@ class DeviceService:
     @staticmethod
     def get_relay_states():
         """Returns boolean relay states: { 'fan': bool, 'led': bool }"""
+        # If Supabase is connected, check Supabase first so cloud controls (e.g. Vercel) sync to ESP32
+        sb = get_supabase()
+        if sb:
+            try:
+                resp = sb.table("devices").select("device_id,status").execute()
+                if resp.data:
+                    states = {d["device_id"]: d.get("status") == "ON" for d in resp.data}
+                    return {
+                        "fan": states.get("fan", False),
+                        "led": states.get("led", False)
+                    }
+            except Exception as e:
+                logger.warning("Supabase relay sync error: %s", e)
+
         session = SessionLocal()
         try:
             fan = session.query(Device).filter_by(device_id="fan").first()
