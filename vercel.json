@@ -1,6 +1,5 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build",
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
@@ -10,10 +9,6 @@
     {
       "source": "/api",
       "destination": "/api/index.py"
-    },
-    {
-      "source": "/((?!api|assets|favicon|logo|vite).*)",
-      "destination": "/index.html"
     }
   ]
 }
