@@ -146,7 +146,7 @@ export default function App() {
 
     } catch (err) {
       console.warn('API Fetch Error:', err.message);
-      setBackendError('Flask backend API is not responding at http://localhost:5000. Start app.py or run Offline Demo mode.');
+      setBackendError('Backend API is not responding. Ensure the backend server is running or launch Offline Demo mode.');
       setEsp32Online(false);
     }
   };
