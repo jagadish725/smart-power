@@ -24,8 +24,9 @@ frontend/.env
 
 # Database
 *.db
+*.db-*
 *.sqlite3
-backend/app/smart_power.db
+backend/app/smart_power.db*
 
 # Arduino / ESP32 build artifacts
 .vscode/
