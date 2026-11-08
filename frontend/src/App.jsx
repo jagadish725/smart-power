@@ -127,13 +127,15 @@ export default function App() {
       // Check ESP32 heartbeat freshness
       const reading = dash?.latest_reading;
       if (reading && reading.timestamp) {
-        const readingTime = new Date(reading.timestamp).getTime();
+        const rawTs = String(reading.timestamp);
+        const isoTs = rawTs.endsWith('Z') || rawTs.includes('+') ? rawTs : rawTs + 'Z';
+        const readingTime = new Date(isoTs).getTime();
         const now = Date.now();
         if (reading.timestamp !== prevTimestampRef.current) {
           prevTimestampRef.current = reading.timestamp;
           setEsp32Online(true);
-          setLastTelemetryDate(new Date(reading.timestamp));
-        } else if (now - readingTime < 10000) {
+          setLastTelemetryDate(new Date(isoTs));
+        } else if (Math.abs(now - readingTime) < 15000) {
           setEsp32Online(true);
         } else {
           setEsp32Online(false);
