@@ -24,6 +24,8 @@ export default function App() {
 
   const prevTimestampRef = useRef(null);
   const offlineTimerRef = useRef(null);
+  const isFetchingRef = useRef(false);
+  const consecutiveErrorsRef = useRef(0);
 
   // Initialize Initial Offline Mock Data Generator
   const createMockDashboard = (fanOn = true, ledOn = true, scenarioKey = 'NORMAL') => {
@@ -108,7 +110,8 @@ export default function App() {
 
   // Fetch Dashboard & Telemetry Data from Real API
   const fetchData = async () => {
-    if (isOfflineDemoActive) return;
+    if (isOfflineDemoActive || isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
     try {
       const [dash, hist] = await Promise.all([
@@ -122,9 +125,10 @@ export default function App() {
         const powers = hist.readings.map(r => r.total_power_mw || 0);
         if (powers.length > 0) setPowerHistory(powers);
       }
+      consecutiveErrorsRef.current = 0;
       setBackendError(null);
 
-      // Check ESP32 heartbeat freshness
+      // Check ESP32 heartbeat freshness (generous 60s window for clock drift & network)
       const reading = dash?.latest_reading;
       if (reading && reading.timestamp) {
         const rawTs = String(reading.timestamp);
@@ -135,7 +139,7 @@ export default function App() {
           prevTimestampRef.current = reading.timestamp;
           setEsp32Online(true);
           setLastTelemetryDate(new Date(isoTs));
-        } else if (Math.abs(now - readingTime) < 15000) {
+        } else if (Math.abs(now - readingTime) < 60000) {
           setEsp32Online(true);
         } else {
           setEsp32Online(false);
@@ -146,8 +150,14 @@ export default function App() {
 
     } catch (err) {
       console.warn('API Fetch Error:', err.message);
-      setBackendError('Backend API is not responding. Ensure the backend server is running or launch Offline Demo mode.');
-      setEsp32Online(false);
+      consecutiveErrorsRef.current += 1;
+      // Only display the error banner after 2 consecutive failed attempts to avoid jitter
+      if (consecutiveErrorsRef.current >= 2) {
+        setBackendError('Backend API is not responding. Ensure the backend server is running or launch Offline Demo mode.');
+        setEsp32Online(false);
+      }
+    } finally {
+      isFetchingRef.current = false;
     }
   };
 
@@ -252,7 +262,7 @@ export default function App() {
   useEffect(() => {
     if (!isOfflineDemoActive) {
       fetchData();
-      const interval = setInterval(fetchData, 2000);
+      const interval = setInterval(fetchData, 2500);
       return () => clearInterval(interval);
     }
   }, [isOfflineDemoActive]);

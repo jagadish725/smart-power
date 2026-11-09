@@ -11,6 +11,7 @@ import json
 import logging
 import urllib.request
 import urllib.error
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -114,9 +115,20 @@ def health():
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
     try:
-        # 1. Fetch latest reading
+        # Fetch all 5 independent queries in parallel for ultra-low latency (<800ms)
+        endpoints = [
+            "sensor_readings?select=*&order=created_at.desc&limit=1",
+            "devices?select=*",
+            "ai_decisions?select=*&order=created_at.desc&limit=10",
+            "sensor_readings?select=total_power_mw,fan_power_mw,led_power_mw&order=created_at.desc&limit=100",
+            "system_settings?select=setting_value&setting_key=eq.operating_mode&limit=1"
+        ]
+
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            readings_data, devices_data, ai_data, hist_data, settings_data = list(executor.map(supabase_get, endpoints))
+
+        # 1. Latest reading
         latest = None
-        readings_data = supabase_get("sensor_readings?select=*&order=created_at.desc&limit=1")
         if readings_data and len(readings_data) > 0:
             row = readings_data[0]
             latest = {
@@ -137,8 +149,7 @@ def dashboard():
                 "is_simulated": bool(row.get("is_simulated", False))
             }
 
-        # 2. Fetch devices
-        devices_data = supabase_get("devices?select=*")
+        # 2. Devices
         devices = []
         if devices_data:
             for d in devices_data:
@@ -178,7 +189,6 @@ def dashboard():
 
         # 4. Recent AI decisions
         recent_decisions = []
-        ai_data = supabase_get("ai_decisions?select=*&order=created_at.desc&limit=10")
         if ai_data:
             for d in ai_data:
                 recent_decisions.append({
@@ -198,7 +208,6 @@ def dashboard():
             "peak_power_mw": 0, "avg_power_mw": 0,
             "fan_energy_wh": 0.032, "led_energy_wh": 0.020
         }
-        hist_data = supabase_get("sensor_readings?select=total_power_mw,fan_power_mw,led_power_mw&order=created_at.desc&limit=100")
         if hist_data:
             totals = [float(r.get("total_power_mw") or 0) for r in hist_data]
             fans = [float(r.get("fan_power_mw") or 0) for r in hist_data]
@@ -214,7 +223,6 @@ def dashboard():
 
         # 6. Operating mode
         mode = "MANUAL"
-        settings_data = supabase_get("system_settings?select=setting_value&setting_key=eq.operating_mode&limit=1")
         if settings_data and len(settings_data) > 0:
             mode = settings_data[0].get("setting_value", "MANUAL")
 
