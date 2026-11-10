@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Wifi, WifiOff, Cloud, Database, Power, AlertTriangle, Settings, RefreshCw } from 'lucide-react';
+import { Cpu, Wifi, WifiOff, Cloud, Database, Power, AlertTriangle, Settings, RefreshCw, LogOut, UserCheck, Shield } from 'lucide-react';
 
 export default function Navbar({
   systemData,
@@ -8,7 +8,9 @@ export default function Navbar({
   onEmergencyStop,
   onOpenSettings,
   isRefreshing,
-  onManualRefresh
+  onManualRefresh,
+  operatorId = 'ADMIN',
+  onLogout
 }) {
   const mode = systemData?.system?.mode || 'MANUAL';
   const supabaseConnected = systemData?.system?.supabase_connected || false;
@@ -104,6 +106,25 @@ export default function Navbar({
           >
             <Settings className="w-4 h-4" />
           </button>
+
+          {/* Operator Profile Badge */}
+          <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded text-xs font-mono border bg-slate-900/90 border-[#1E2E4A] text-slate-300">
+            <Shield className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-slate-400">OPERATOR:</span>
+            <span className="text-cyan-300 font-bold">{operatorId}</span>
+          </div>
+
+          {/* Admin Logout Button */}
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-slate-400 hover:text-rose-300 bg-slate-900 hover:bg-rose-950/40 border border-[#1E2E4A] hover:border-rose-500/40 transition-all"
+              title="Lock SCADA Console & Logout"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">LOCK</span>
+            </button>
+          )}
 
         </div>
       </div>

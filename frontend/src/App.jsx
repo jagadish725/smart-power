@@ -7,10 +7,18 @@ import AnalyticsCharts from './components/AnalyticsCharts';
 import SystemStatusBar from './components/SystemStatusBar';
 import SettingsModal from './components/SettingsModal';
 import ScenarioSimulator, { SCENARIO_PRESETS } from './components/ScenarioSimulator';
+import AdminLogin from './components/AdminLogin';
 import api from './services/api';
-import { AlertCircle, WifiOff, RefreshCw, Sparkles, X, Play, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, WifiOff, RefreshCw, Sparkles, X, Play, CheckCircle2, ShieldCheck, Terminal, Activity } from 'lucide-react';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('scada_admin_auth') === 'true' || sessionStorage.getItem('scada_admin_auth') === 'true';
+  });
+  const [operatorId, setOperatorId] = useState(() => {
+    return localStorage.getItem('scada_operator_id') || sessionStorage.getItem('scada_operator_id') || 'ADMIN';
+  });
+
   const [dashboardData, setDashboardData] = useState(null);
   const [historyData, setHistoryData] = useState([]);
   const [powerHistory, setPowerHistory] = useState([2400, 2800, 3100, 3400, 3800]);
@@ -26,6 +34,19 @@ export default function App() {
   const offlineTimerRef = useRef(null);
   const isFetchingRef = useRef(false);
   const consecutiveErrorsRef = useRef(0);
+
+  const handleLoginSuccess = (user) => {
+    setOperatorId(user);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('scada_admin_auth');
+    localStorage.removeItem('scada_operator_id');
+    sessionStorage.removeItem('scada_admin_auth');
+    sessionStorage.removeItem('scada_operator_id');
+    setIsAuthenticated(false);
+  };
 
   // Initialize Initial Offline Mock Data Generator
   const createMockDashboard = (fanOn = true, ledOn = true, scenarioKey = 'NORMAL') => {
@@ -50,7 +71,7 @@ export default function App() {
       },
       devices: [
         { device_id: 'fan', name: '12V DC Brushless Fan', voltage_rating: '12V DC', relay_pin: 25, status: fanOn ? 'ON' : 'OFF', is_active: fanOn },
-        { device_id: 'led', name: '5V DC COB LED Module', voltage_rating: '5V DC', relay_pin: 26, status: ledOn ? 'ON' : 'OFF', is_active: ledOn }
+        { device_id: 'led', name: '12V DC LED Module', voltage_rating: '12V DC', relay_pin: 26, status: ledOn ? 'ON' : 'OFF', is_active: ledOn }
       ],
       system: {
         mode: 'MANUAL',
@@ -425,6 +446,10 @@ export default function App() {
 
   const mode = dashboardData?.system?.mode || 'MANUAL';
 
+  if (!isAuthenticated) {
+    return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#090D16] text-[#F1F5F9] flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
       
@@ -438,9 +463,35 @@ export default function App() {
           onOpenSettings={() => setIsSettingsOpen(true)}
           isRefreshing={isRefreshing}
           onManualRefresh={handleManualRefresh}
+          operatorId={operatorId}
+          onLogout={handleLogout}
         />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+          {/* Professional SCADA Station Metadata Strip */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-lg bg-[#0D1524]/90 border border-[#1E2E4A] text-xs font-mono">
+            <div className="flex items-center space-x-3">
+              <span className="flex items-center space-x-1.5 text-cyan-400 font-semibold">
+                <Terminal className="w-3.5 h-3.5" />
+                <span>TERMINAL://OPT-STATION-01</span>
+              </span>
+              <span className="text-slate-600">|</span>
+              <span className="text-slate-400 hidden sm:inline">
+                LOADS: <span className="text-slate-200">12V FAN (0x40)</span> &amp; <span className="text-slate-200">12V LED (0x41)</span>
+              </span>
+            </div>
+            <div className="flex items-center space-x-3 text-[11px]">
+              <span className="flex items-center space-x-1.5 text-emerald-400">
+                <Activity className="w-3.5 h-3.5 animate-pulse" />
+                <span>TELEMETRY CYCLE: 2.0s</span>
+              </span>
+              <span className="text-slate-600 hidden md:inline">|</span>
+              <span className="text-slate-400 hidden md:inline">
+                ENGINE: <span className="text-cyan-300">RANDOM FOREST OODA AGENT</span>
+              </span>
+            </div>
+          </div>
           
           {/* Active Offline Demo Banner */}
           {isOfflineDemoActive && (
