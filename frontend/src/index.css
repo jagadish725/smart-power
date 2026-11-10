@@ -3,10 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
   body {
     background-color: #090D16;
     color: #F1F5F9;
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
   }
 }
 

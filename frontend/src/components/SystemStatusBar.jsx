@@ -17,10 +17,11 @@ export default function SystemStatusBar({
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
         
         {/* Left: Hardware Node Status */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <div className="flex items-center space-x-1.5">
             <span className={`w-2 h-2 rounded-full ${esp32Online ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'}`} />
-            <span>NODE: ESP32 DevKit V1 ({esp32Online ? 'ONLINE' : 'HEARTBEAT TIMEOUT'})</span>
+            <span className="sm:hidden">ESP32: {esp32Online ? 'ONLINE' : 'OFFLINE'}</span>
+            <span className="hidden sm:inline">NODE: ESP32 DevKit V1 ({esp32Online ? 'ONLINE' : 'HEARTBEAT TIMEOUT'})</span>
           </div>
 
           <div className="hidden sm:flex items-center space-x-1 text-slate-500">

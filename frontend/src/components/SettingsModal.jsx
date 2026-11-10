@@ -38,7 +38,7 @@ export default function SettingsModal({
             <span className="text-[11px] uppercase tracking-wider text-slate-400 block mb-2 font-bold">
               1. AUTONOMOUS VS MANUAL OPERATING MODE
             </span>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
                 <p className="text-slate-200 font-semibold mb-1">
                   Current Mode: <span className="text-cyan-400 font-bold">{operatingMode}</span>
@@ -51,7 +51,7 @@ export default function SettingsModal({
               </div>
               <button
                 onClick={onToggleMode}
-                className="px-4 py-2 rounded font-bold uppercase text-xs border border-cyan-400/50 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition-all shrink-0 ml-4"
+                className="w-full sm:w-auto px-4 py-2.5 rounded font-bold uppercase text-xs border border-cyan-400/50 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition-all shrink-0 text-center active:scale-95"
               >
                 Switch to {operatingMode === 'AUTO' ? 'MANUAL' : 'AUTO'}
               </button>
@@ -73,7 +73,7 @@ export default function SettingsModal({
               <div className="bg-slate-950 p-2.5 rounded border border-[#1E2E4A]/80">
                 <span className="text-[10px] text-slate-400 block">LED TRIP LIMIT</span>
                 <span className="text-sm font-bold text-slate-100">3,500 mW</span>
-                <span className="text-[9px] text-slate-500 block">5V @ 700mA</span>
+                <span className="text-[9px] text-slate-500 block">12V @ 290mA</span>
               </div>
               <div className="bg-slate-950 p-2.5 rounded border border-[#1E2E4A]/80">
                 <span className="text-[10px] text-slate-400 block">TOTAL BUDGET</span>

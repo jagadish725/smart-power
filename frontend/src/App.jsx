@@ -13,10 +13,10 @@ import { AlertCircle, WifiOff, RefreshCw, Sparkles, X, Play, CheckCircle2, Shiel
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('scada_admin_auth') === 'true' || sessionStorage.getItem('scada_admin_auth') === 'true';
+    return sessionStorage.getItem('scada_admin_auth') === 'true';
   });
   const [operatorId, setOperatorId] = useState(() => {
-    return localStorage.getItem('scada_operator_id') || sessionStorage.getItem('scada_operator_id') || 'ADMIN';
+    return sessionStorage.getItem('scada_operator_id') || 'ADMIN';
   });
 
   const [dashboardData, setDashboardData] = useState(null);
@@ -467,28 +467,28 @@ export default function App() {
           onLogout={handleLogout}
         />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6">
 
           {/* Professional SCADA Station Metadata Strip */}
-          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-lg bg-[#0D1524]/90 border border-[#1E2E4A] text-xs font-mono">
-            <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-[#0D1524]/90 border border-[#1E2E4A] text-[11px] sm:text-xs font-mono">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <span className="flex items-center space-x-1.5 text-cyan-400 font-semibold">
-                <Terminal className="w-3.5 h-3.5" />
+                <Terminal className="w-3.5 h-3.5 shrink-0" />
                 <span>TERMINAL://OPT-STATION-01</span>
               </span>
-              <span className="text-slate-600">|</span>
+              <span className="text-slate-600 hidden xs:inline">|</span>
               <span className="text-slate-400 hidden sm:inline">
                 LOADS: <span className="text-slate-200">12V FAN (0x40)</span> &amp; <span className="text-slate-200">12V LED (0x41)</span>
               </span>
             </div>
-            <div className="flex items-center space-x-3 text-[11px]">
+            <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-[11px]">
               <span className="flex items-center space-x-1.5 text-emerald-400">
-                <Activity className="w-3.5 h-3.5 animate-pulse" />
-                <span>TELEMETRY CYCLE: 2.0s</span>
+                <Activity className="w-3.5 h-3.5 animate-pulse shrink-0" />
+                <span>CYCLE: 2.0s</span>
               </span>
               <span className="text-slate-600 hidden md:inline">|</span>
               <span className="text-slate-400 hidden md:inline">
-                ENGINE: <span className="text-cyan-300">RANDOM FOREST OODA AGENT</span>
+                ENGINE: <span className="text-cyan-300">RANDOM FOREST OODA</span>
               </span>
             </div>
           </div>
