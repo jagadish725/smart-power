@@ -20,8 +20,8 @@ export default function DeviceManagement({
 
   const ledDev = devices?.find(d => d.device_id === 'led') || {
     device_id: 'led',
-    name: '5V DC COB LED Module',
-    voltage_rating: '5V DC',
+    name: '12V DC LED Module',
+    voltage_rating: '12V DC',
     relay_pin: 26,
     status: 'OFF',
     is_active: false
@@ -166,7 +166,7 @@ export default function DeviceManagement({
               <div>
                 <span className="text-[10px] font-mono text-amber-400 tracking-wider uppercase block">LOAD 2 • GPIO 26</span>
                 <h3 className="text-base font-bold text-slate-100">{ledDev.name}</h3>
-                <span className="text-xs font-mono text-slate-400">Sensor: INA219 #2 (I2C: 0x41) • Regulated 5V</span>
+                <span className="text-xs font-mono text-slate-400">Sensor: INA219 #2 (I2C: 0x41) • 12V Branch</span>
               </div>
             </div>
 
@@ -193,9 +193,9 @@ export default function DeviceManagement({
                 : 'bg-slate-900/60 border-slate-800 text-slate-500'
             }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${isLedActive ? 'bg-amber-400 animate-ping' : 'bg-slate-600'}`} />
-              <span>{isLedActive ? 'COB EMITTER: ACTIVE (~450 LUMENS)' : 'EMITTER: QUENCHED (0 LUMENS)'}</span>
+              <span>{isLedActive ? 'LED EMITTER: ACTIVE (~250 LUMENS)' : 'EMITTER: QUENCHED (0 LUMENS)'}</span>
             </span>
-            <span className="text-amber-400/90 font-semibold">LM2596: 5.0V Regulated</span>
+            <span className="text-amber-400/90 font-semibold">12V DC: 2.4W Nominal</span>
           </div>
 
           {/* Live Telemetry Bar */}

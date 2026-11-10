@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS devices (
 INSERT INTO devices (device_id, name, voltage_rating, relay_pin, status, is_active)
 VALUES 
     ('fan', '12V DC Brushless Fan', '12V DC', 25, 'OFF', FALSE),
-    ('led', '5V DC COB LED Module', '5V DC', 26, 'OFF', FALSE)
+    ('led', '12V DC LED Module', '12V DC', 26, 'OFF', FALSE)
 ON CONFLICT (device_id) DO NOTHING;
 
 -- 3. AI Decisions & Recommendations Log Table

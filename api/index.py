@@ -164,7 +164,7 @@ def dashboard():
         if not devices:
             devices = [
                 {"device_id": "fan", "name": "12V DC Brushless Fan", "voltage_rating": "12V DC", "relay_pin": 25, "status": "OFF", "is_active": False},
-                {"device_id": "led", "name": "5V DC COB LED Module", "voltage_rating": "5V DC", "relay_pin": 26, "status": "OFF", "is_active": False}
+                {"device_id": "led", "name": "12V DC LED Module", "voltage_rating": "12V DC", "relay_pin": 26, "status": "OFF", "is_active": False}
             ]
 
         # 3. AI classification

@@ -52,8 +52,8 @@ def init_db():
         if not session.query(Device).filter_by(device_id="led").first():
             led = Device(
                 device_id="led",
-                name="5V DC COB LED Module",
-                voltage_rating="5V DC",
+                name="12V DC LED Module",
+                voltage_rating="12V DC",
                 relay_pin=26,
                 status="OFF",
                 is_active=False

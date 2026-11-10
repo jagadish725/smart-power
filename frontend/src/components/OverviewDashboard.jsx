@@ -206,7 +206,7 @@ export default function OverviewDashboard({ latestReading, analytics, systemData
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <div className="flex items-center space-x-2">
               <span className={`w-2 h-2 rounded-full ${led.relay_on ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'}`} />
-              <span className="font-mono text-xs uppercase tracking-wider">5V COB LED (INA219 #2)</span>
+              <span className="font-mono text-xs uppercase tracking-wider">12V LED (INA219 #2)</span>
             </div>
             <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
               led.relay_on ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'
